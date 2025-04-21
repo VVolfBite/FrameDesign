@@ -1,0 +1,324 @@
+1.7.数据库设计
+中国商品信息服务平台数据存储使用SQLSERVER资源，数据存储19.3TB，涉及数据库表1275张，字段数量6459个，其中业务对象表212张，统计数据表107张，系统日志表等63张、其他833张。详情如附件。
+
+表 4系统产品数据表
+序号	表名	表中文名称	字段名	字段描述
+1	ProductBrickRelate	产品brick属性关联表	Id	主键
+			Baseld	产品主键
+			AttributeId	AttributeManager主键
+			AttributeValue	属性值（用户输入或者选择的值）
+2	ProductExtensionAttribute	产品新版本扩展属性表	Id	主键
+			Baseld	产品主键
+			ProductReportVersions	产品语言版本zh-cn en-us
+			ProductType	产品类型 0零售 1 定量包装 2散装
+			ProductFunction	产品通用名称
+			ProductVariantValue	商品特征
+			ProductManufacturingStatus	产品状态 1在产 2不在产
+3	AttributeManager	产品属性和属性值表	Id	主键
+			BrickCode	GPC4级分类代码（brick代码）
+			AttributeCode	属性代码
+			AttributeENTitle	属性英文描述
+			AttributeCNTitle	属性中文描述
+			AttributeValueCode	属性值代码
+			AttributeValueENTitle	属性值英文描述
+			AttributeValueCNTitle	属性值中文描述
+			AttributeValueSwith	属性值开关
+			AttributeValueLength	属性值长度
+			AttributeSwith	属性开关
+			AttributeDisplay	属性类型 用于前端渲染
+			AttributeCodeList	属性的字段集合
+			AttributeDefaultValue	属性默认值
+			IsRequired	当前属性是否必填
+			DataSource	数据来源
+			IsDelete	是否删除
+			UpdateTime	修改时间
+4	app_web_search_attribute	产品搜索表（条码、企业名称、规格、关键字上市日期等）	base_id	产品主键
+			gtin	条码
+			f_id	企业id
+			firm_name	企业名称
+			specification	规格
+			descriptionShort	产品名称
+			description	产品描述
+			brand	品牌
+			SaleDate	上市日期
+			Keyword	关键字
+			Picture_FileName	主图url路径
+			Certificate_FileName	执照url路径
+			RetailPrice	零售价
+			RetailPriceUnit	零售价单位
+5	BaseInfo	产品大库表（存储条码创建和对应卡信息）	base_id	产品流水号
+			base_gtin	条码
+			base_user_id	添加用户名
+			base_card	添加卡号
+			base_status	状态0 删除  1有效
+			base_create_time	创建时间
+			base_last_updated	最后修改时间
+			base_source	数据来源
+			base_item_check_status	
+			base_ver	修改版本 每次加1
+			tmcount	
+			OldVlaue	
+			ClickCount	
+			SearchCount	
+			is_private	是否公开 1否 0是
+			tmp_id	
+			createdate	创建日期 int类型
+6	TradeItemB	产品基础信息表（品牌、gpc、名称等）	base_id	产品主键
+			Description	产品描述
+			l_desShort	
+			class_code	unspnc分类（弃用）
+			brand	品牌
+			is_base	
+			is_consumer	
+			is_invoice	
+			is_variable	
+			origin	原产国代码值
+			unit_descriptor	
+			base_ver	
+			pkg_code	
+			gpc	gpc分类代码
+			netContentUnit	净含量数值
+			netContent	净含量单位
+7	ItemInfo	产品审核属性（审核状态、条码对应gln）	item_id	自增id
+			base_gln	当前gtin对应的gln
+			base_id	产品主键
+			tm	目标市场
+			user_id	添加用户名
+			item_status	状态，参见表CodeItemStatus
+			create_time	创建时间 一般和baseinfo创建时间一致
+			last_updated	修改时间
+			source	来源 一般和baseinfo来源一致
+			item_check_status	审核状态字段，10正常，5等待，0失败
+			ver	版本号
+			reg_status	注册到GR状态
+			reg_date	注册到GR时间
+8	Picture	产品图片表	base_id	产品主键
+			file_name	图片url路径
+			dscrpt_type_code	是否主图
+			file_discription	图片描述
+			base_ver	版本
+			CreateDate	创建时间
+9	ProductStandards	产品执行标准存储表	Id	自增主键
+			BaseId	产品主键
+			StandCodeType	标准类型
+			StandCodeNum	标准中间数字
+			StandCodeYear	标准年份
+			StandCodeVaildResult	标准验证结果
+			CompleteStandCode	对外透出 标准组合键（类型+数字+年份）
+			CreateTime	创建时间
+10	TradeItemScore	产品质量评分表	Base_Id	产品主键
+			F_id	企业id 目前没有值
+			Score	产品分数
+			CreateTime	创建时间
+11	TradeItemScoreBV（103库）	数据质量评分扣分详情	Id	自增主键
+			Base_Id	产品主键
+			Score	每个原因涉及分数
+			ErrorType	扣分原因Id 具体查看 ScoreErrorDes
+			CreateTime	创建时间
+表 5系统企业数据表
+序号	表名	表中文名称	字段名	字段描述
+1	FirmCertify	企业实名认证表	Cid	Id
+			Fid	Fid
+			FirmName	企业中文名称
+			FirmNameEN	企业英文名
+			FirmType	企业类型
+			RegisterAdderss	中文地址
+			RegisterAdderssEN	英文地址
+			BranchCode	分中心代码
+			LeaderName	法人
+			LeaderMp	法人手机
+			IssueTime	营业期限开始时间
+			IsLong	是否长期
+			EndTime	营业期限到期时间
+			ClassCode	国民分类代码
+			CreditCode	社会信用代码
+			WebSite	企业网址
+			ApplyTime	申请时间
+			ApproveStatus	0默认，1已提交数据，2已提交认证待审核，3审核过，-1被退回
+			ApproveTime	批准时间
+			ContactMan	联系人
+			ContactTel	联系人电话
+			ContactMp	联系人手机
+			ContactMail	联系人邮箱
+			BaseUser	用户名
+			CertiType	认证类型，取消了使用
+			BusinessLicenseFile	营业执照地址
+			FlagOut	1失效，0有效
+			ApproveUser	批准人
+			FirmArchivesFile	认证表地址
+			MeanService	意向服务
+			CertifyChange	1认证，2变更
+			oldfid	老系统清洗数据ID
+2	firm2	非系统企业信息表	f_id	企业id
+			login_date	
+			dm	
+			t_j_dm	行业分类代码
+			firm_type	企业类型
+			firm_name	企业名称
+			firm_name1	企业英文名称
+			register_address	注册地址
+			register_address1	注册地址（英文）
+			register_postalcode	
+			address	
+			address1	
+			postcode	
+			certificate_code	
+			political	
+			register_principal	
+			coin_type	
+			firm_code	
+			leader	法人
+			leader_tele	法人电话
+			leader_handset	法人手机
+			contactman	联系人
+			tele	
+			fax	
+			email	
+			net_station	
+			wishused_num	
+			used_num	
+			branch_code	分支机构代码
+			logout_flag	1失效，0有效
+			in_flag	
+3	FirmCertifyCheckLog	企业认证日志记录表	Id	自增主键
+			Cid	企业认证表ID
+			FirmName	企业名称
+			BaseUser	认证用户
+			ApproveUser	批准人
+			ApplyTime	申请时间
+			ApproveTime	批准时间
+			CheckType	审核类型（1认证，2变更）
+			CheckResult	1审核通过，2审核不通过
+			ApproveContent	审核内容
+			infos	
+4	import_user	进口发布企业	id	自增主键
+			f_id	企业id
+			realname	
+			cardno	企业卡号
+			gln	企业gln
+			cardname	
+			codeagent	
+			source	
+			status	
+			create_time	创建时间
+			branch_code	分中心代码
+			companytype	
+			othercompanytype	
+			choosebranchcode	
+			isconfidentiality	
+5	firm_ancc	系统成员企业管理表	f_id	主键
+			login_date	信息注册或变更日期
+			dm	
+			t_j_dm	国民经济分类码
+			firm_type	企业类型
+			firm_name	企业名称
+			firm_name1	名英文称
+			register_address	注册地址
+			register_address1	英文注册地址和
+			register_postalcode	
+			address	
+			address1	
+			postcode	邮编
+			certificate_code	社会信用代码
+			political	地区代码
+			register_principal	注册金额（万元）
+			coin_type	货币类型
+			firm_code	企业代码
+			leader	法人
+			leader_tele	法人电话
+			leader_handset	法人手机
+			contactman	联系人
+			tele	电话
+			fax	传真
+			email	邮件
+			net_station	网址地址
+			wishused_num	
+			used_num	
+			branch_code	分支机构代码
+			logout_flag	0正常，1注销
+			in_flag	
+			mp	联系人手机号
+			dbd_code	代办点代码
+6	FirmCertifyChange	非系统成员企业实名认证变更	Id	自增主键
+			Cid	企业认证表ID
+			Fid	企业id
+			FirmName	企业名称
+			FirmNameEN	企业英文名称
+			FirmType	企业类型
+			RegisterAdderss	注册地址
+			RegisterAdderssEn	注册地址（英文）
+			BranchCode	分支机构代码
+			LeaderName	法人
+			LeaderMp	法人手机
+			IssueTime	营业期限开始时间
+			IsLong	是否长期
+			EndTime	营业期限到期时间
+			ClassCode	国民分类代码
+			CreditCode	社会信用代码
+			WebSite	企业网址
+			CreateTime	申请时间
+			ApproveStatus	0默认，1已提交数据，2已提交认证待审核，3审核过，-1被退回
+			ApproveTime	批准时间
+			ContactMan	批准人
+			ContactTel	联系人电话
+			ContactMp	联系人手机
+			ContactMail	联系人邮箱
+			BaseUser	用户名
+			CertiType	认证类型，取消了使用
+			BusinessLicenseFile	营业执照地址
+			FlagOut	1失效，0有效
+			ApproveUser	批准人
+			FirmArchivesFile	认证表地址
+			MeanService	意向服务
+			ApplyTime	申请时间
+表 5系统用户数据表
+序号	表名	表中文名称	字段名	字段描述
+1	UserRoles	用户角色关系表	Userld	用户表主键ID
+			Roleld	角色表主键ID
+2	Member	用户信息表	Id	主键自增
+			user_id	用户名
+			NormalizedUserName	大写用户名（Identity server 4 默认生成字段好像底层方法是通过这个字段去做查询）
+			password	MD5加密密码
+			PhoneNumber	手机号
+			Email	邮箱
+			NormalizedEmail	大写邮箱地址（Identity server 4 默认生成字段好像底层方法是通过这个字段去做查询）
+			QQNumber	QQ号
+			WechatNumber	微信号
+			IsVirtualUser	
+			IsFirmAuth	是否企业认证 1是 0 否
+			RealName	真实姓名
+			sex	性别
+			IdentityCardNumber	身份证号
+			BirthDay	生日
+			City	地区
+			address	居住所在地址
+			Remark	备注
+			HeaderPictureUrl	头像url地址
+			IsDeleted	是否删除 1是 0 否
+			CreateTime	创建时间
+			ModifyTime	修改时间
+			source	数据来源
+			EmailConfirmed	邮箱是否被验证过
+			SecurityStamp	
+			ConcurrencyStamp	
+			PhoneNumberConfirmed	手机号是否被验证过
+			TwoFactorEnabled	双因子校验
+			LockoutEnd	锁定时间
+			LockoutEnabled	用户是否被锁住
+			AccessFailedCount	失败次数
+			IsEnableLoginSet	是否启用登录（弃用）
+3	UserClaims	用户声明表（存储卡号、手机号json字段）	Id	自增id
+			Userld	用户主键
+			ClaimType	声明类型  userinfo  roleinfo... 存储相关用户信息
+			ClaimValue	声明json字符串
+4	Roles	角色码表	Id	自增主键
+			IsDeleted	是否删除
+			Description	角色描述
+			OrderSort	排序
+			Enabled	是否启用
+			CreateTime	创建时间
+			ModifyTime	修改时间
+			Name	角色名称
+			NormalizedName	大写角色名称
+			ConcurrencyStamp	
+
